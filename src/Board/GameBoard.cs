@@ -93,7 +93,7 @@ namespace WinterIsComing.Server
                     zombie.MoveRandom();
                     broadcastService.Broadcast(this, $"[{this.Name}] WALK {zombie.Name} {zombie.X} {zombie.Y}");
 
-                    if (zombie.Y >= 30)
+                    if (zombie.Y >= 20)
                     {
                         EndGameAndRespawn();
                         unitsToRemove.Add(go);

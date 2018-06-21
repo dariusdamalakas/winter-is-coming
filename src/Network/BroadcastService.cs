@@ -5,7 +5,7 @@ using StackExchange.NetGain.WebSockets;
 
 namespace WinterIsComing.Server
 {
-    class BroadcastService : IGameNetwork, IDisposable
+    class GameNework : IGameNetwork, IDisposable
     {
         private TcpServer server;
 

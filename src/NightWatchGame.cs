@@ -45,7 +45,7 @@ namespace WinterIsComing.Server
                 .As<IBoardManager>()
                 .SingleInstance();
 
-            builder.RegisterType<BroadcastService>()
+            builder.RegisterType<GameNework>()
                 .As<IBroadcastService>()
                 .As<IGameNetwork>()
                 .SingleInstance();
