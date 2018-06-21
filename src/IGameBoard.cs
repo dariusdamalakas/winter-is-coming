@@ -3,7 +3,11 @@
     public interface IGameBoard
     {
         string Name { get; set; }
-        bool IsAlreadyJoined(string playerName);
-        void Join(string playerName);
+        bool IsAlreadyJoined(IPlayer player);
+        bool IsAlreadyJoined(string connectionId);
+        void Join(IPlayer player);
+
+        void Start();
+        void Stop();
     }
 }

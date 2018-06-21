@@ -2,5 +2,6 @@
 {
     public interface IGameCommand
     {
+        string ConnectionId { get; set; }
     }
 }

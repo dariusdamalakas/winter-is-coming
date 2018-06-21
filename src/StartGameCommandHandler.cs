@@ -19,10 +19,10 @@
 
             var board = boardManager.FindOrNewBoard(startGameCommand.BoardName);
 
-            if (board.IsAlreadyJoined(startGameCommand.PlayerName))
+            if (board.IsAlreadyJoined(startGameCommand.ConnectionId))
                 return $"Player {startGameCommand.PlayerName} already playing on board {board.Name}";
 
-            board.Join(startGameCommand.PlayerName);
+            board.Join(new Player(startGameCommand.PlayerName, startGameCommand.ConnectionId));
             return $"Player {startGameCommand.PlayerName} joined board {board.Name}";
         }
 

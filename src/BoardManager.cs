@@ -7,6 +7,12 @@ namespace WinterIsComing.Server
     {
         private readonly List<IGameBoard> boards = new List<IGameBoard>();
         private static int Boards;
+        private readonly IBroadcastService broadcastService;
+
+        public BoardManager(IBroadcastService broadcastService)
+        {
+            this.broadcastService = broadcastService;
+        }
 
         public IGameBoard FindOrNewBoard(string boardName)
         {
@@ -16,9 +22,9 @@ namespace WinterIsComing.Server
             return CreateNewBoard(boardName);
         }
 
-        public IGameBoard IsAlreadyPlaying(string playerName)
+        public IGameBoard IsAlreadyPlaying(string connectionId)
         {
-            return boards.FirstOrDefault(y => y.IsAlreadyJoined(playerName));
+            return boards.FirstOrDefault(y => y.IsAlreadyJoined(connectionId));
         }
 
         private IGameBoard CreateNewBoard(string boardName)
@@ -30,7 +36,12 @@ namespace WinterIsComing.Server
             }
 
             // todo: detect if board with this name already exists
-            var board = new GameBoard(boardName);
+            var board = new GameBoard(boardName, broadcastService);
+
+            var zombie = new Zombie("night-king", 0, 0);
+            board.AddGameObject(zombie);
+            board.Start();
+
             this.boards.Add(board);
             return board;
         }

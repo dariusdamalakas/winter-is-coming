@@ -17,11 +17,14 @@
         /// Can be empty. If not provided will create new board
         /// </summary>
         public string BoardName { get; set; }
+
+        public string ConnectionId { get; set; }
     }
 
     public class PlayerShootCommand : IGameCommand
     {
         public int X { get; set; }
         public int Y { get; set; }
+        public string ConnectionId { get; set; }
     }
 }

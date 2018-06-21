@@ -32,6 +32,12 @@ namespace WinterIsComing.Server
                 .As<IBoardManager>()
                 .SingleInstance();
 
+            builder.RegisterType<BroadcastService>()
+                .As<IBroadcastService>()
+                .As<IGameNetwork>()
+                .SingleInstance();
+            
+
         var container = builder.Build();
 
             return container.Resolve<IGameEngine>();

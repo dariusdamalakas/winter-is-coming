@@ -20,6 +20,7 @@ namespace WinterIsComing.Server
             try
             {
                 var command = gameCommandFactory.BuildFrom(msg.Value?.ToString());
+                command.ConnectionId = msg.Connection.Id.ToString();
                 var response = commandDispatcher.Dispatch(command);
 
                 msg.Connection.Send(msg.Context, response);
