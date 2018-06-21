@@ -16,7 +16,23 @@ namespace WinterIsComing.Server
                 .As<IGameEngine>()
                 .SingleInstance();
 
-            var container = builder.Build();
+            builder.RegisterType<GameCommandFactory>()
+                .As<IGameCommandFactory>()
+                .SingleInstance();
+
+            builder.RegisterType<GameCommandDispatcher>()
+                .As<IGameCommandDispatcher>()
+                .SingleInstance();
+
+            builder.RegisterType<StartGameCommandHandler>()
+                .As<IGameCommandHandler>()
+                .SingleInstance();
+
+            builder.RegisterType<BoardManager>()
+                .As<IBoardManager>()
+                .SingleInstance();
+
+        var container = builder.Build();
 
             return container.Resolve<IGameEngine>();
         }
