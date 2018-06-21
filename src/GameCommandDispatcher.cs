@@ -12,10 +12,10 @@ namespace WinterIsComing.Server
             this.handlers = handlers.ToArray();
         }
 
-        public string  Dispatch(IGameCommand command)
+        public void Dispatch(IGameCommand command)
         {
             var h = handlers.Single(y => y.CanHandle(command));
-            return h.Handle(command);
+            h.Handle(command);
         }
     }
 }

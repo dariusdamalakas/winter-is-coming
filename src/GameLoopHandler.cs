@@ -21,15 +21,9 @@ namespace WinterIsComing.Server
             {
                 var command = gameCommandFactory.BuildFrom(msg.Value?.ToString());
                 command.ConnectionId = msg.Connection.Id.ToString();
-                var response = commandDispatcher.Dispatch(command);
+                commandDispatcher.Dispatch(command);
 
-                msg.Connection.Send(msg.Context, response);
-
-                //var conn = (WebSocketConnection)msg.Connection;
-                //var reply = $"reply:{msg.Value} / {conn.Host} / {conn.RequestLine} / {conn.Id}";
-                //Console.WriteLine($"[server] {msg.Value}, ");
-                //var reply = $"Command: {command.GetType()}";
-                //msg.Connection.Send(msg.Context, reply);
+                //msg.Connection.Send(msg.Context, response);
             }
             catch (InvalidGameCommandException e)
             {

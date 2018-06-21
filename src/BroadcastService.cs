@@ -9,6 +9,11 @@ namespace WinterIsComing.Server
     {
         private TcpServer server;
 
+        public void Broadcast(string connectionId, string message)
+        {
+            this.server.Broadcast(message, y => y.Id.ToString() == connectionId);
+        }
+
         public void Broadcast(IGameBoard board, string message)
         {
             this.server.Broadcast(message, y=> HasActiveGame(y, board));

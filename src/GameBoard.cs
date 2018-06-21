@@ -5,83 +5,23 @@ using System.Threading;
 
 namespace WinterIsComing.Server
 {
-    interface IGameObject
-    {
-        int X { get; set; }
-        int Y { get; set; }
-        string Name { get; set; }
-    }
-
-    class Zombie : IGameObject
-    {
-        public Zombie(string name, int x, int y)
-        {
-            this.Name = name;
-            this.X = x;
-            this.Y = y;
-        }
-
-        public int X { get; set; }
-        public int Y { get; set; }
-        public string Name { get; set; }
-
-        public void MoveRandom()
-        {
-            this.X += 0.Random(3) - 1;
-            if (X < 0)
-                X = 0;
-            if (X > 10)
-                X = 10;
-
-            this.Y += 0.Random(2);
-            if (Y > 30)
-                Y = 30;
-        }
-    }
-
-    static class RandExtensions
-    {
-        private static Random rand = new Random();
-
-        public static int Random(this int minValue, int maxValue)
-        {
-            var res = rand.Next(minValue, maxValue);
-            return res;
-        }
-    }
-
-    public interface IPlayer
-    {
-        string Name { get; set; }
-        string ConnectionId { get; set; }
-    }
-
-    public class Player : IPlayer
-    {
-        public Player(string playerName, string connectionId)
-        {
-            this.Name = playerName;
-            this.ConnectionId = connectionId;
-        }
-
-        public string Name { get; set; }
-        public string ConnectionId { get; set; }
-    }
-
     class GameBoard : IGameBoard
     {
         private readonly IBroadcastService broadcastService;
+        private readonly IBoardActions boardActions;
 
         // TODO - thread safety?
         private readonly List<IPlayer> players = new List<IPlayer>();
         private readonly List<IGameObject> gameObjects = new List<IGameObject>();
         public string Name { get; set; }
-        Timer timer;
+        public IList<IPlayer> Players => this.players;
+        private Timer timer;
 
-        public GameBoard(string boardName, IBroadcastService broadcastService)
+        public GameBoard(string boardName, IBroadcastService broadcastService, IBoardActions boardActions)
         {
             this.Name = boardName;
             this.broadcastService = broadcastService;
+            this.boardActions = boardActions;
         }
 
         public bool IsAlreadyJoined(IPlayer player)
@@ -99,9 +39,34 @@ namespace WinterIsComing.Server
             this.players.Add(player);
         }
 
+        public IPlayer FindPlayer(string connectionId)
+        {
+            return players.SingleOrDefault(y => y.ConnectionId == connectionId);
+        }
+
+        public void RemovePlayer(string connectionId)
+        {
+            this.players.RemoveAll(y => y.ConnectionId == connectionId);
+        }
+
+        public IGameObject ObjectAt(int x, int y)
+        {
+            foreach (var go in gameObjects)
+            {
+                if (go.X == x && go.Y == y)
+                    return go;
+            }
+            return null;
+        }
+
         public void AddGameObject(IGameObject go)
         {
             this.gameObjects.Add(go);
+        }
+
+        public void RemoveGameObject(IGameObject gameObject)
+        {
+            this.gameObjects.Remove(gameObject);
         }
 
         public void Start()
@@ -119,14 +84,35 @@ namespace WinterIsComing.Server
 
         private void MoveGameObjects(object state)
         {
+            var unitsToRemove = new List<IGameObject>();
+
             foreach (var go in gameObjects)
             {
                 if (go is Zombie zombie)
                 {
                     zombie.MoveRandom();
-                    broadcastService.Broadcast(this, $"WALK {zombie.Name} {zombie.X} {zombie.Y}");
+                    broadcastService.Broadcast(this, $"[{this.Name}] WALK {zombie.Name} {zombie.X} {zombie.Y}");
+
+                    if (zombie.Y >= 30)
+                    {
+                        EndGameAndRespawn();
+                        unitsToRemove.Add(go);
+                    }
                 }
             }
+
+            foreach (var go in unitsToRemove)
+            {
+                this.gameObjects.Remove(go);
+            }
+        }
+
+        private void EndGameAndRespawn()
+        {
+            broadcastService.Broadcast(this, $"White walker has breached the wall. You all die.");
+            this.players.ForEach(y => y.Score --);
+            this.boardActions.ScheduleNewZombie(this);
+
         }
     }
 }

@@ -7,6 +7,6 @@
         /// </summary>
         /// <param name="command"></param>
         /// <returns>Response that is send to the user</returns>
-        string Dispatch(IGameCommand command);
+        void Dispatch(IGameCommand command);
     }
 }

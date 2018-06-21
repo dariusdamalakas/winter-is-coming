@@ -28,6 +28,19 @@ namespace WinterIsComing.Server
                 .As<IGameCommandHandler>()
                 .SingleInstance();
 
+            builder.RegisterType<ShootGameCommandHandler>()
+                .As<IGameCommandHandler>()
+                .SingleInstance();
+
+            builder.RegisterType<PlayerStatsCommandHandler>()
+                .As<IGameCommandHandler>()
+                .SingleInstance();
+
+            builder.RegisterType<QuitGameCommandHandler>()
+                .As<IGameCommandHandler>()
+                .SingleInstance();
+
+
             builder.RegisterType<BoardManager>()
                 .As<IBoardManager>()
                 .SingleInstance();
@@ -36,9 +49,17 @@ namespace WinterIsComing.Server
                 .As<IBroadcastService>()
                 .As<IGameNetwork>()
                 .SingleInstance();
+
+            builder.RegisterType<GameBoardFactory>()
+                .As<IGameBoardFactory>()
+                .SingleInstance();
+
+            builder.RegisterType<BoardActions>()
+                .As<IBoardActions>()
+                .SingleInstance();
             
 
-        var container = builder.Build();
+            var container = builder.Build();
 
             return container.Resolve<IGameEngine>();
         }

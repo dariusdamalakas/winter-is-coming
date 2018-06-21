@@ -2,7 +2,8 @@
 {
     public interface IBoardManager
     {
-        IGameBoard FindOrNewBoard(string boardName);
-        IGameBoard IsAlreadyPlaying(string playerName);
+        IGameBoard New(string boardName);
+        IGameBoard Find(string boardName);
+        IGameBoard FindByConnectionId(string connectionId);
     }
 }

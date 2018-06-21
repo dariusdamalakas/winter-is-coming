@@ -2,7 +2,7 @@
 {
     interface IGameCommandHandler
     {
-        string Handle(IGameCommand command);
+        void Handle(IGameCommand command);
         bool CanHandle(IGameCommand command);
     }
 }

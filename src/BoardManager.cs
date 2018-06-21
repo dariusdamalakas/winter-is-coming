@@ -7,22 +7,24 @@ namespace WinterIsComing.Server
     {
         private readonly List<IGameBoard> boards = new List<IGameBoard>();
         private static int Boards;
-        private readonly IBroadcastService broadcastService;
+        private readonly IGameBoardFactory boardFactory;
 
-        public BoardManager(IBroadcastService broadcastService)
+        public BoardManager(IGameBoardFactory boardFactory)
         {
-            this.broadcastService = broadcastService;
+            this.boardFactory = boardFactory;
         }
 
-        public IGameBoard FindOrNewBoard(string boardName)
+        public IGameBoard Find(string boardName)
         {
-            var board = boards.SingleOrDefault(y => y.Name == boardName);
-            if (board != null)
-                return board;
+            return boards.SingleOrDefault(y => y.Name == boardName);
+        }
+
+        public IGameBoard New(string boardName)
+        {
             return CreateNewBoard(boardName);
         }
 
-        public IGameBoard IsAlreadyPlaying(string connectionId)
+        public IGameBoard FindByConnectionId(string connectionId)
         {
             return boards.FirstOrDefault(y => y.IsAlreadyJoined(connectionId));
         }
@@ -36,11 +38,7 @@ namespace WinterIsComing.Server
             }
 
             // todo: detect if board with this name already exists
-            var board = new GameBoard(boardName, broadcastService);
-
-            var zombie = new Zombie("night-king", 0, 0);
-            board.AddGameObject(zombie);
-            board.Start();
+            var board = boardFactory.New(boardName);
 
             this.boards.Add(board);
             return board;

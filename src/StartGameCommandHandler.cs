@@ -3,27 +3,50 @@
     class StartGameCommandHandler : IGameCommandHandler
     {
         private readonly IBoardManager boardManager;
+        private readonly IBroadcastService broadcastService;
 
-        public StartGameCommandHandler(IBoardManager boardManager)
+        public StartGameCommandHandler(IBoardManager boardManager, IBroadcastService broadcastService)
         {
             this.boardManager = boardManager;
+            this.broadcastService = broadcastService;
         }
 
-        public string Handle(IGameCommand command)
+        public void Handle(IGameCommand command)
         {
             var startGameCommand = command as StartGameCommand;
 
-            var alreadyPlayingOnBoard = boardManager.IsAlreadyPlaying(startGameCommand.PlayerName);
+            var alreadyPlayingOnBoard = boardManager.FindByConnectionId(startGameCommand.ConnectionId);
             if (alreadyPlayingOnBoard != null)
-                return $"Player {startGameCommand.PlayerName} already playing on board {alreadyPlayingOnBoard.Name}";
+            {
+                broadcastService.Broadcast(command.ConnectionId, $"Player {startGameCommand.PlayerName} already playing on board {alreadyPlayingOnBoard.Name}");
+                return;
+            }
 
-            var board = boardManager.FindOrNewBoard(startGameCommand.BoardName);
+            var board = boardManager.Find(startGameCommand.BoardName);
+            if (board == null)
+            {
+                board = StartNewBoard(startGameCommand.BoardName);
+            }
 
             if (board.IsAlreadyJoined(startGameCommand.ConnectionId))
-                return $"Player {startGameCommand.PlayerName} already playing on board {board.Name}";
+            {
+                broadcastService.Broadcast(command.ConnectionId, $"Player {startGameCommand.PlayerName} already playing on board {board.Name}");
+                return;
+            }
 
             board.Join(new Player(startGameCommand.PlayerName, startGameCommand.ConnectionId));
-            return $"Player {startGameCommand.PlayerName} joined board {board.Name}";
+            broadcastService.Broadcast(command.ConnectionId, $"Player {startGameCommand.PlayerName} joined board {board.Name}");
+        }
+
+        private IGameBoard StartNewBoard(string boardName)
+        {
+            var board = boardManager.New(boardName);
+
+            var zombie = new Zombie("night-king", 0, 0);
+            board.AddGameObject(zombie);
+            board.Start();
+
+            return board;
         }
 
         public bool CanHandle(IGameCommand command)
