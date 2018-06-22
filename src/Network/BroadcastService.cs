@@ -24,6 +24,11 @@ namespace WinterIsComing.Server
             this.server.Broadcast(message, y => true);
         }
 
+        public void BroadcastExcept(IGameBoard board, string message, Func<string, bool> connectionFilter)
+        {
+            this.server.Broadcast(message, y => HasActiveGame(y, board) && connectionFilter(y.Id.ToString()) == false);
+        }
+
         private bool HasActiveGame(Connection connection, IGameBoard board)
         {
             return board.IsAlreadyJoined(connection.Id.ToString());
@@ -36,7 +41,7 @@ namespace WinterIsComing.Server
 
         public void Start()
         {
-            var endpoint = new IPEndPoint(IPAddress.Loopback, 6002);
+            var endpoint = new IPEndPoint(IPAddress.Any, 6002);
             server = new TcpServer();
             server.ProtocolFactory = WebSocketsSelectorProcessor.Default;
             server.ConnectionTimeoutSeconds = 60;

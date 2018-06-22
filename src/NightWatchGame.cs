@@ -40,6 +40,13 @@ namespace WinterIsComing.Server
                 .As<IGameCommandHandler>()
                 .SingleInstance();
 
+            builder.RegisterType<HelpCommandHandler>()
+                .As<IGameCommandHandler>()
+                .SingleInstance();
+
+            builder.RegisterType<ChatCommandHandler>()
+                .As<IGameCommandHandler>()
+                .SingleInstance();
 
             builder.RegisterType<BoardManager>()
                 .As<IBoardManager>()

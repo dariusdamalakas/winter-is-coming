@@ -16,6 +16,7 @@ namespace WinterIsComing.Server
         void Start();
         void Stop();
 
+        IList<IGameObject> GameObjects { get; }
         IGameObject ObjectAt(int x, int y);
         void AddGameObject(IGameObject zombie);
         void RemoveGameObject(IGameObject gameObject);

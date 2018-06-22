@@ -82,6 +82,8 @@ namespace WinterIsComing.Server
             this.timer = null;
         }
 
+        public IList<IGameObject> GameObjects => this.gameObjects;
+
         private void MoveGameObjects(object state)
         {
             var unitsToRemove = new List<IGameObject>();

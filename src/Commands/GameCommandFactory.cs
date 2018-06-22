@@ -11,6 +11,8 @@ namespace WinterIsComing.Server
             public const string Shoot = "SHOOT";
             public const string PlayerStats = "STATS";
             public const string QuitGame = "QUIT";
+            public const string ChatCommand = "CHAT";
+            public const string HelpCommand = "HELP";
         }
 
         public IGameCommand  BuildFrom(string msg)
@@ -27,7 +29,21 @@ namespace WinterIsComing.Server
                 return BuildStatsCommand(splt);
             if (splt[0].StartsWith(Commands.QuitGame))
                 return BuildQuitGameCommand(splt);
+            if (splt[0].StartsWith(Commands.ChatCommand))
+                return BuildChatCommand(msg);
+            if (splt[0].StartsWith(Commands.HelpCommand))
+                return BuildHelpCommand(splt);
             throw new InvalidGameCommandException($"Unknown command");
+        }
+
+        private IGameCommand BuildHelpCommand(string[] splt)
+        {
+            return new HelpCommand();
+        }
+
+        private IGameCommand BuildChatCommand(string msg)
+        {
+            return new ChatCommand(msg.Substring(Commands.Start.Length).Trim());
         }
 
         private IGameCommand BuildQuitGameCommand(string[] splt)

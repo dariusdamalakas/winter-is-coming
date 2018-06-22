@@ -15,6 +15,7 @@ namespace WinterIsComing.Server
 
         public void StartGameLoop()
         {
+            Console.WriteLine($"Starting up");
             gameNetwork.Start();
             gameNetwork.SetOnMessageReceived(gameLoopHandler.GameLoop);
             Console.WriteLine("Server running");

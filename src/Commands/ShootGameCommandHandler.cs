@@ -32,9 +32,15 @@
                 return;
             }
 
-            boardActions.ScheduleNewZombie(board);
-            player.Score += 1;
             board.RemoveGameObject(hitObject);
+            if (board.GameObjects.Count < 1)
+            {
+                broadcastService.Broadcast(board, $"Oh no, they are respawning. Now there will be 2 zombies!");
+                boardActions.ScheduleNewZombie(board);
+                boardActions.ScheduleNewZombie(board, 1000.Random(5000));
+            }
+
+            player.Score += 1;
 
             broadcastService.Broadcast(board, $"BOOM {player.Name} {player.Score} {hitObject.Name}");
         }
